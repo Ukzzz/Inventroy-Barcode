@@ -112,7 +112,7 @@
     <!-- Header -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Generate Reports</h1>
-        <p class="text-gray-600">Export delivery and inventory reports in Excel or PDF format</p>
+        <p class="text-gray-600">Export delivery and inventory reports in Excel format</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -154,23 +154,12 @@
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
-                <div class="flex space-x-2 pt-4">
-                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition duration-150 ease-in-out">
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5">
                         <i class="fas fa-file-excel mr-2"></i>
-                        Export Excel
+                        Export Delivery Report to Excel
                     </button>
-                    <a href="#" id="delivery-pdf-btn" class="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium transition duration-150 ease-in-out text-center">
-                        <i class="fas fa-file-pdf mr-2"></i>
-                        Export PDF
-                    </a>
                 </div>
-            </form>
-
-            <!-- PDF Form (Hidden) -->
-            <form id="delivery-pdf-form" method="GET" action="/reports/delivery/pdf" style="display: none;">
-                <input type="date" name="startDate" id="pdfStartDate">
-                <input type="date" name="endDate" id="pdfEndDate">
-                <input type="text" name="customerName" id="pdfCustomerName">
             </form>
         </div>
 
@@ -216,9 +205,9 @@
                 </div>
 
                 <div class="pt-4">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition duration-150 ease-in-out">
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg transition duration-200 ease-in-out transform hover:-translate-y-0.5">
                         <i class="fas fa-file-excel mr-2"></i>
-                        Export Excel
+                        Export Inventory Report to Excel
                     </button>
                 </div>
             </form>
@@ -226,32 +215,35 @@
     </div>
 
     <!-- Report Information -->
-    <div class="mt-8 bg-gray-50 rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">
-            <i class="fas fa-info-circle mr-2"></i>
+    <div class="mt-8 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            <i class="fas fa-info-circle text-blue-500 mr-2"></i>
             Report Information
         </h3>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <h4 class="font-medium text-gray-900 mb-2">Excel Reports (.xlsx)</h4>
-                <ul class="text-sm text-gray-600 space-y-1">
-                    <li>• Detailed tabular data with all fields</li>
-                    <li>• Sortable and filterable columns</li>
-                    <li>• Compatible with Excel, Google Sheets, and other spreadsheet applications</li>
-                    <li>• Best for data analysis and further processing</li>
-                </ul>
-            </div>
-            
-            <div>
-                <h4 class="font-medium text-gray-900 mb-2">PDF Reports (.pdf)</h4>
-                <ul class="text-sm text-gray-600 space-y-1">
-                    <li>• Formatted for printing and sharing</li>
-                    <li>• Professional layout with headers and footers</li>
-                    <li>• Summary statistics and totals</li>
-                    <li>• Best for presentations and official documentation</li>
-                </ul>
-            </div>
+        <div class="bg-white rounded-lg p-5 shadow-sm">
+            <h4 class="font-semibold text-gray-900 mb-3">
+                <i class="fas fa-file-excel text-green-600 mr-2"></i>
+                Excel Reports (.xlsx)
+            </h4>
+            <ul class="text-sm text-gray-600 space-y-2">
+                <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-500 mr-2 mt-0.5"></i>
+                    <span>Detailed tabular data with all fields and formatted currency values</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-500 mr-2 mt-0.5"></i>
+                    <span>Sortable and filterable columns for easy data analysis</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-500 mr-2 mt-0.5"></i>
+                    <span>Compatible with Excel, Google Sheets, and other spreadsheet applications</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-500 mr-2 mt-0.5"></i>
+                    <span>Perfect for data analysis, reporting, and record-keeping</span>
+                </li>
+            </ul>
         </div>
     </div>
 
@@ -309,19 +301,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.getElementById('startDate').value = thirtyDaysAgo.toISOString().split('T')[0];
     document.getElementById('endDate').value = today.toISOString().split('T')[0];
-    
-    // PDF form handling
-    document.getElementById('delivery-pdf-btn').addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        // Copy values from Excel form to PDF form
-        document.getElementById('pdfStartDate').value = document.getElementById('startDate').value;
-        document.getElementById('pdfEndDate').value = document.getElementById('endDate').value;
-        document.getElementById('pdfCustomerName').value = document.getElementById('customerName').value;
-        
-        // Submit PDF form
-        document.getElementById('delivery-pdf-form').submit();
-    });
     
     // Load quick stats
     loadQuickStats();

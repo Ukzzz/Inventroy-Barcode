@@ -1,19 +1,12 @@
 const express = require('express');
 const Delivery = require('../models/Delivery');
 const Inventory = require('../models/Inventory');
-const { requireAuth, requireStaff } = require('../middleware/auth');
+const { requireAuth, requireStaff, requireAdmin } = require('../middleware/auth');
+const { flashMessages, getTodayRange, getMonthRange, formatCurrency } = require('../utils/helpers');
 const router = express.Router();
 
 // All delivery routes require authentication
 router.use(requireAuth);
-
-// Flash messages middleware
-const flashMessages = (req, res, next) => {
-  res.locals.success = req.flash('success');
-  res.locals.error = req.flash('error');
-  next();
-};
-
 router.use(flashMessages);
 
 // Delivery scanning page
@@ -154,17 +147,105 @@ router.get('/history', requireStaff, async (req, res) => {
   }
 });
 
+// Get single delivery by ID
+router.get('/api/:id', requireStaff, async (req, res) => {
+  try {
+    const delivery = await Delivery.findById(req.params.id)
+      .populate('inventoryItem', 'itemName category size color price')
+      .populate('deliveredBy', 'username');
+
+    if (!delivery) {
+      return res.status(404).json({ success: false, error: 'Delivery not found' });
+    }
+
+    res.json({ success: true, delivery });
+  } catch (error) {
+    console.error('Get delivery error:', error);
+    res.status(500).json({ success: false, error: 'Error fetching delivery details' });
+  }
+});
+
+// Update delivery (Admin only)
+router.post('/update/:id', requireAdmin, async (req, res) => {
+  try {
+    const { customerName, quantityDelivered, notes } = req.body;
+    const delivery = await Delivery.findById(req.params.id);
+
+    if (!delivery) {
+      req.flash('error', 'Delivery not found');
+      return res.redirect('/delivery/history');
+    }
+
+    // If quantity changed, update inventory
+    if (parseInt(quantityDelivered) !== delivery.quantityDelivered) {
+      const diff = parseInt(quantityDelivered) - delivery.quantityDelivered;
+      if (delivery.inventoryItem) {
+        const inventoryItem = await Inventory.findById(delivery.inventoryItem);
+        if (inventoryItem) {
+          // diff < 0 means reducing delivery (returning stock), always allowed
+          // diff > 0 means increasing delivery, need to check available stock
+          if (diff < 0 || inventoryItem.quantity >= diff) {
+            await Inventory.findByIdAndUpdate(delivery.inventoryItem, {
+              $inc: { quantity: -diff }
+            });
+          } else {
+            req.flash('error', `Insufficient stock for quantity update. Available: ${inventoryItem.quantity}, Additional needed: ${diff}`);
+            return res.redirect('/delivery/history');
+          }
+        } else {
+          req.flash('error', 'Associated inventory item no longer exists');
+          return res.redirect('/delivery/history');
+        }
+      }
+    }
+
+    // Update delivery
+    delivery.customerName = customerName;
+    delivery.quantityDelivered = parseInt(quantityDelivered);
+    delivery.notes = notes;
+    await delivery.save();
+
+    req.flash('success', 'Delivery updated successfully');
+    res.redirect('/delivery/history');
+  } catch (error) {
+    console.error('Update delivery error:', error);
+    req.flash('error', 'Error updating delivery');
+    res.redirect('/delivery/history');
+  }
+});
+
+// Delete delivery (Admin only)
+router.post('/delete/:id', requireAdmin, async (req, res) => {
+  try {
+    const delivery = await Delivery.findById(req.params.id);
+    
+    if (!delivery) {
+      req.flash('error', 'Delivery not found');
+      return res.redirect('/delivery/history');
+    }
+
+    // If the inventory item still exists, restore the quantity
+    if (delivery.inventoryItem) {
+      await Inventory.findByIdAndUpdate(delivery.inventoryItem, {
+        $inc: { quantity: delivery.quantityDelivered }
+      });
+    }
+
+    await Delivery.findByIdAndDelete(req.params.id);
+    req.flash('success', 'Delivery deleted successfully');
+    res.redirect('/delivery/history');
+  } catch (error) {
+    console.error('Delete delivery error:', error);
+    req.flash('error', 'Error deleting delivery');
+    res.redirect('/delivery/history');
+  }
+});
+
 // Get delivery statistics
 router.get('/api/stats', requireStaff, async (req, res) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    const { today, tomorrow } = getTodayRange();
+    const { thisMonth, nextMonth } = getMonthRange();
 
     const stats = {
       todayDeliveries: await Delivery.countDocuments({

@@ -326,7 +326,8 @@ function populateItemDetails(item) {
     document.getElementById('item-size').textContent = item.size;
     document.getElementById('item-color').textContent = item.color;
     document.getElementById('item-stock').textContent = item.quantity;
-    document.getElementById('item-price').textContent = 'Rs ' + item.price.toFixed(2);
+    const formattedPrice = item.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    document.getElementById('item-price').textContent = 'Rs ' + formattedPrice;
     document.getElementById('item-barcode').textContent = item.barcode;
     
     document.getElementById('inventory-id').value = item.id;

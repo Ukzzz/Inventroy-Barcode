@@ -1,14 +1,8 @@
 const express = require('express');
 const User = require('../models/User');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
+const { flashMessages } = require('../utils/helpers');
 const router = express.Router();
-
-// Flash messages middleware
-const flashMessages = (req, res, next) => {
-  res.locals.success = req.flash('success');
-  res.locals.error = req.flash('error');
-  next();
-};
 
 router.use(flashMessages);
 

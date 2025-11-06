@@ -1,24 +1,52 @@
-/* Custom styles for the Uniform Inventory System */
+/* ========================================
+   UNIFIED DESIGN SYSTEM - Inventory System
+   ======================================== */
 
-/* Barcode scanner specific styles */
-#scanner-placeholder {
-    background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%), 
-                linear-gradient(-45deg, #f3f4f6 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #f3f4f6 75%), 
-                linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
-    background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+/* Performance: Use GPU acceleration for transforms */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Loading animation */
+/* Performance: Reduce paint and layout thrashing */
+.will-change {
+    will-change: transform, opacity;
+}
+
+/* ========================================
+   BEAUTIFUL CUSTOM SCROLLBAR
+   ======================================== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #8b5cf6 0%, #6366f1 100%);
+    border-radius: 10px;
+    border: 2px solid #f3f4f6;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #7c3aed 0%, #4f46e5 100%);
+}
+
+/* ========================================
+   LOADING ANIMATIONS
+   ======================================== */
 .loading {
     display: inline-block;
     width: 20px;
     height: 20px;
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #3498db;
+    border: 3px solid rgba(99, 102, 241, 0.2);
+    border-top: 3px solid #6366f1;
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 @keyframes spin {
@@ -26,17 +54,95 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Card hover effects */
-.card-hover {
-    transition: all 0.3s ease;
+.pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
-/* Status indicators */
+/* ========================================
+   UNIFIED CARD STYLES
+   ======================================== */
+.card-modern {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-modern:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.card-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
+}
+
+/* ========================================
+   BUTTON ENHANCEMENTS
+   ======================================== */
+.btn-modern {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-modern:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* ========================================
+   BARCODE SCANNER STYLES
+   ======================================== */
+#scanner-placeholder {
+    background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%), 
+                linear-gradient(-45deg, #f3f4f6 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #f3f4f6 75%), 
+                linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    border-radius: 1rem;
+    animation: scanner-pulse 2s ease-in-out infinite;
+}
+
+@keyframes scanner-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.barcode-display {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 3px;
+    font-weight: bold;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ========================================
+   STATUS INDICATORS
+   ======================================== */
 .status-indicator {
     position: relative;
     display: inline-block;
@@ -46,33 +152,96 @@
     content: '';
     position: absolute;
     top: 50%;
-    left: -10px;
+    left: -12px;
     transform: translateY(-50%);
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background-color: currentColor;
+    animation: pulse-dot 2s ease-in-out infinite;
 }
 
-/* Barcode display */
-.barcode-display {
-    font-family: 'Courier New', monospace;
-    letter-spacing: 2px;
-    font-weight: bold;
+@keyframes pulse-dot {
+    0%, 100% { transform: translateY(-50%) scale(1); opacity: 1; }
+    50% { transform: translateY(-50%) scale(1.2); opacity: 0.8; }
 }
 
-/* Print styles */
-@media print {
-    .no-print {
-        display: none !important;
-    }
-    
-    .print-break {
-        page-break-after: always;
-    }
+/* ========================================
+   PAGE TRANSITIONS
+   ======================================== */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
 }
 
-/* Mobile optimizations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in {
+    animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* ========================================
+   FORM ENHANCEMENTS
+   ======================================== */
+.input-modern {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-modern:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+}
+
+/* ========================================
+   TABLE ENHANCEMENTS
+   ======================================== */
+.table-modern tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table-modern tbody tr:hover {
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+    transform: scale(1.01);
+}
+
+/* ========================================
+   BADGE STYLES
+   ======================================== */
+.badge-modern {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.badge-modern:hover {
+    transform: scale(1.1);
+}
+
+/* ========================================
+   GLASSMORPHISM EFFECT
+   ======================================== */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ========================================
+   RESPONSIVE UTILITIES
+   ======================================== */
 @media (max-width: 768px) {
     .mobile-stack {
         flex-direction: column;
@@ -81,22 +250,93 @@
     .mobile-full {
         width: 100%;
     }
+    
+    .mobile-hide {
+        display: none;
+    }
+    
+    /* Reduce animations on mobile for performance */
+    .card-modern:hover {
+        transform: translateY(-2px);
+    }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
+@media (max-width: 640px) {
+    .text-responsive {
+        font-size: 0.875rem;
+    }
 }
 
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-break {
+        page-break-after: always;
+    }
+    
+    body {
+        background: white;
+    }
+    
+    .card-modern {
+        box-shadow: none;
+        border: 1px solid #e5e7eb;
+    }
 }
 
-::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+.focus-visible:focus {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.shadow-glow {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+.text-gradient {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.border-gradient {
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+}
+
+.border-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
 }

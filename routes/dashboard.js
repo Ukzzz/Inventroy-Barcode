@@ -3,14 +3,8 @@ const Inventory = require('../models/Inventory');
 const Delivery = require('../models/Delivery');
 const User = require('../models/User');
 const { requireAuth } = require('../middleware/auth');
+const { flashMessages, getTodayRange, getMonthRange, getTotalFromAggregate } = require('../utils/helpers');
 const router = express.Router();
-
-// Flash messages middleware
-const flashMessages = (req, res, next) => {
-  res.locals.success = req.flash('success');
-  res.locals.error = req.flash('error');
-  next();
-};
 
 router.use(flashMessages);
 
@@ -24,25 +18,19 @@ router.get('/', async (req, res) => {
     const totalItems = await Inventory.countDocuments();
     const totalStock = await Inventory.aggregate([
       { $group: { _id: null, total: { $sum: '$quantity' } } }
-    ]).then(result => result[0]?.total || 0);
+    ]).then(result => getTotalFromAggregate(result));
 
     const lowStockItems = await Inventory.countDocuments({ quantity: { $lte: 10, $gt: 0 } });
     const outOfStockItems = await Inventory.countDocuments({ quantity: 0 });
 
     // Today's deliveries
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
+    const { today, tomorrow } = getTodayRange();
     const todayDeliveries = await Delivery.countDocuments({
       deliveryDate: { $gte: today, $lt: tomorrow }
     });
 
     // This month's deliveries
-    const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-
+    const { thisMonth, nextMonth } = getMonthRange();
     const thisMonthDeliveries = await Delivery.countDocuments({
       deliveryDate: { $gte: thisMonth, $lt: nextMonth }
     });
@@ -97,19 +85,14 @@ router.get('/', async (req, res) => {
 // Get dashboard statistics (API endpoint)
 router.get('/api/stats', async (req, res) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    const { today, tomorrow } = getTodayRange();
+    const { thisMonth, nextMonth } = getMonthRange();
 
     const stats = {
       totalItems: await Inventory.countDocuments(),
       totalStock: await Inventory.aggregate([
         { $group: { _id: null, total: { $sum: '$quantity' } } }
-      ]).then(result => result[0]?.total || 0),
+      ]).then(result => getTotalFromAggregate(result)),
       lowStockItems: await Inventory.countDocuments({ quantity: { $lte: 10, $gt: 0 } }),
       outOfStockItems: await Inventory.countDocuments({ quantity: 0 }),
       todayDeliveries: await Delivery.countDocuments({
@@ -117,7 +100,8 @@ router.get('/api/stats', async (req, res) => {
       }),
       thisMonthDeliveries: await Delivery.countDocuments({
         deliveryDate: { $gte: thisMonth, $lt: nextMonth }
-      })
+      }),
+      totalDeliveries: await Delivery.countDocuments()
     };
 
     res.json({ success: true, stats });

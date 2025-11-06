@@ -1,18 +1,25 @@
 // ==========================================================
 // Uniform Inventory System - Main JavaScript File
-// Handles UI interactions, validation, messages, and utilities
+// Optimized for Performance & User Experience
 // ==========================================================
 
 const App = {
+    // Cache for DOM queries
+    cache: {},
+    
     // -----------------------------
     // Initialize the application
     // -----------------------------
     init() {
-        this.setupEventListeners();
-        this.setupTooltips();
-        this.setupFormValidation();
-        this.setupBarcodePreview();
-        console.log('✅ Uniform Inventory System initialized');
+        // Performance optimization: Use requestAnimationFrame for non-critical tasks
+        requestAnimationFrame(() => {
+            this.setupEventListeners();
+            this.setupLazyLoading();
+            this.setupFormValidation();
+            this.setupBarcodePreview();
+            this.setupIntersectionObserver();
+            console.log('✅ Inventory System initialized - Performance Optimized');
+        });
     },
 
     // -----------------------------
@@ -23,20 +30,63 @@ const App = {
         this.setupMobileMenu();
         this.setupUserDropdown();
         this.setupConfirmationDialogs();
+        this.setupSmoothScroll();
+        this.setupKeyboardShortcuts();
     },
 
     // -----------------------------
-    // Auto-hide flash messages
+    // Auto-hide flash messages with animation
     // -----------------------------
     autoHideFlashMessages() {
         const flashMessages = document.querySelectorAll('[role="alert"], .alert-message');
-        flashMessages.forEach(msg => {
+        flashMessages.forEach((msg, index) => {
+            // Stagger animations for multiple messages
             setTimeout(() => {
-                msg.style.opacity = '0';
-                msg.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => msg.remove(), 300);
-            }, 5000);
+                msg.style.animation = 'fadeIn 0.3s ease-in';
+                setTimeout(() => {
+                    msg.style.animation = 'fadeOut 0.3s ease-out';
+                    setTimeout(() => msg.remove(), 300);
+                }, 5000);
+            }, index * 100);
         });
+    },
+
+    // -----------------------------
+    // Lazy Loading for Images
+    // -----------------------------
+    setupLazyLoading() {
+        const lazyImages = document.querySelectorAll('img[data-src]');
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.add('fade-in');
+                        imageObserver.unobserve(img);
+                    }
+                });
+            });
+            lazyImages.forEach(img => imageObserver.observe(img));
+        }
+    },
+
+    // -----------------------------
+    // Intersection Observer for Animations
+    // -----------------------------
+    setupIntersectionObserver() {
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+        }
     },
 
     // -----------------------------
@@ -185,35 +235,169 @@ const App = {
     },
 
     // -----------------------------
+    // Smooth Scroll
+    // -----------------------------
+    setupSmoothScroll() {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && href !== '') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+    },
+
+    // -----------------------------
+    // Keyboard Shortcuts
+    // -----------------------------
+    setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + K: Focus search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                const searchInput = document.querySelector('input[type="search"], input[name="search"]');
+                if (searchInput) searchInput.focus();
+            }
+            // Esc: Close modals
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.fixed.inset-0:not(.hidden)').forEach(modal => {
+                    modal.classList.add('hidden');
+                });
+            }
+        });
+    },
+
+    // -----------------------------
     // Utility Helpers
     // -----------------------------
     utils: {
         formatCurrency(amount) {
-            return new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR' }).format(amount);
+            if (amount == null || isNaN(amount)) return 'Rs 0.00';
+            return 'Rs ' + parseFloat(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         },
         formatDate(date) {
-            return new Date(date).toLocaleDateString();
+            return new Date(date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
         },
         formatDateTime(date) {
-            return new Date(date).toLocaleString();
+            return new Date(date).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
         },
-        debounce(func, wait) {
+        debounce(func, wait = 300) {
             let timeout;
-            return function (...args) {
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
                 clearTimeout(timeout);
-                timeout = setTimeout(() => func(...args), wait);
+                timeout = setTimeout(later, wait);
+            };
+        },
+        throttle(func, limit = 300) {
+            let inThrottle;
+            return function (...args) {
+                if (!inThrottle) {
+                    func.apply(this, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
             };
         },
         copyToClipboard(text) {
-            navigator.clipboard.writeText(text)
-                .then(() => App.showMessage('Copied to clipboard', 'success'))
-                .catch(() => App.showMessage('Failed to copy', 'error'));
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text)
+                    .then(() => App.showMessage('✓ Copied to clipboard', 'success'))
+                    .catch(() => App.showMessage('✗ Failed to copy', 'error'));
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    App.showMessage('✓ Copied to clipboard', 'success');
+                } catch (err) {
+                    App.showMessage('✗ Failed to copy', 'error');
+                }
+                document.body.removeChild(textArea);
+            }
+        },
+        // Performance: Request Idle Callback wrapper
+        runWhenIdle(callback) {
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(callback);
+            } else {
+                setTimeout(callback, 1);
+            }
+        },
+        // Get cached DOM element
+        getElement(selector) {
+            if (!App.cache[selector]) {
+                App.cache[selector] = document.querySelector(selector);
+            }
+            return App.cache[selector];
         }
     }
 };
 
 // -----------------------------
-// Initialize App
+// Performance: Passive Event Listeners
 // -----------------------------
-document.addEventListener('DOMContentLoaded', () => App.init());
+const supportsPassive = (() => {
+    let passive = false;
+    try {
+        const opts = Object.defineProperty({}, 'passive', {
+            get: () => { passive = true; }
+        });
+        window.addEventListener('test', null, opts);
+        window.removeEventListener('test', null, opts);
+    } catch (e) {}
+    return passive;
+})();
+
+// -----------------------------
+// Initialize App with Error Handling
+// -----------------------------
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        try {
+            App.init();
+        } catch (error) {
+            console.error('❌ App initialization error:', error);
+        }
+    });
+} else {
+    try {
+        App.init();
+    } catch (error) {
+        console.error('❌ App initialization error:', error);
+    }
+}
+
+// Export to window for global access
 window.App = App;
+
+// Performance: Log page load time
+window.addEventListener('load', () => {
+    if (window.performance && window.performance.timing) {
+        const loadTime = window.performance.timing.loadEventEnd - window.performance.timing.navigationStart;
+        console.log(`⚡ Page loaded in ${loadTime}ms`);
+    }
+});
