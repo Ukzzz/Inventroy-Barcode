@@ -4,7 +4,7 @@
   "description": "A comprehensive web-based uniform inventory management system with barcode scanning for delivery tracking",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "dev": "nodemon server.js",
     "create-admin": "node createAdmin.js"
   },

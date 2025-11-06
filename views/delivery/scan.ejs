@@ -91,7 +91,7 @@
                 <a href="/delivery/history" class="text-white hover:text-blue-200 block px-3 py-2 rounded-md">
                     <i class="fas fa-history mr-2"></i> Delivery History
                 </a>
-                <a href="/reports" class="text-white hover:text-blue-200 block px-3 py-2 rounded-md">
+                <a href="/delivery/reports" class="text-white hover:text-blue-200 block px-3 py-2 rounded-md">
                     <i class="fas fa-chart-bar mr-2"></i> Reports
                 </a>
                 <% if (user.role === 'admin') { %>
@@ -108,58 +108,66 @@
         </div>
     </nav>
 
-<div class="max-w-4xl mx-auto px-4 py-8">
-    <!-- Header -->
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Scan Barcode for Delivery</h1>
-        <p class="text-gray-600">Scan or manually enter barcode to process delivery</p>
-    </div>
+<!-- Header -->
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Scan Barcode for Delivery</h1>
+    <p class="text-gray-600">Use your POSPRO PBS-QR1000 scanner to process deliveries</p>
+</div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Scanner Section -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">
-                <i class="fas fa-qrcode mr-2"></i>
-                Barcode Scanner
-            </h2>
-            
-            <!-- Camera Preview -->
-            <div class="relative">
-                <video id="video" class="w-full h-64 bg-gray-200 rounded-lg" style="display: none;"></video>
-                <canvas id="canvas" class="hidden"></canvas>
-                <div id="scanner-placeholder" class="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <div class="text-center">
-                        <i class="fas fa-camera text-4xl text-gray-400 mb-4"></i>
-                        <p class="text-gray-500">Click "Start Camera" to begin scanning</p>
+<!-- Main Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    
+    <!-- Scanner Section -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">
+            <i class="fas fa-barcode mr-2"></i>
+            Scan Barcode
+        </h2>
+
+        <!-- Hardware Scanner Input -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-6">
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0">
+                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-barcode text-white text-2xl"></i>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Scanner Controls -->
-            <div class="mt-4 flex space-x-2">
-                <button id="start-camera" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition duration-150 ease-in-out">
-                    <i class="fas fa-play mr-2"></i>
-                    Start Camera
-                </button>
-                <button id="stop-camera" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium transition duration-150 ease-in-out" style="display: none;">
-                    <i class="fas fa-stop mr-2"></i>
-                    Stop Camera
-                </button>
-            </div>
-            
-            <!-- Manual Barcode Input -->
-            <div class="mt-6 border-t border-gray-200 pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-3">Or Enter Barcode Manually</h3>
-                <div class="flex space-x-2">
-                    <input type="text" id="manual-barcode" placeholder="Enter barcode number and press Enter" 
-                           class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <button id="manual-scan" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition duration-150 ease-in-out">
-                        <i class="fas fa-search mr-2"></i>
-                        Search
-                    </button>
+
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">
+                        <i class="fas fa-keyboard mr-2 text-blue-600"></i>
+                        Scan with POSPRO Scanner
+                    </h3>
+
+                    <p class="text-sm text-gray-600 mb-4">
+                        Click in the field below and scan with your POSPRO PBS-QR1000 barcode scanner
+                    </p>
+
+                    <div class="flex space-x-2">
+                        <input type="text" id="scanner-input" 
+                               placeholder="👉 Click here and scan barcode..." 
+                               autofocus
+                               class="flex-1 px-4 py-3 text-lg border-2 border-blue-400 rounded-md 
+                                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+
+                        <button id="search-btn" 
+                                class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md 
+                                       font-medium transition duration-150 ease-in-out">
+                            <i class="fas fa-search mr-2"></i>
+                            Search
+                        </button>
+                    </div>
+
+                    <p class="text-xs text-gray-500 mt-2">
+                        <i class="fas fa-lightbulb text-yellow-500"></i> 
+                        <strong>Tip:</strong> Configure your POSPRO as USB-HID (Keyboard mode) with Enter key suffix for automatic search
+                    </p>
                 </div>
             </div>
         </div>
+    </div>
+
+
 
         <!-- Delivery Form Section -->
         <div class="bg-white rounded-lg shadow-md p-6">
@@ -229,129 +237,61 @@
     </div>
 </div>
 
-<!-- Include QuaggaJS for barcode scanning -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-
 <script>
-let scannerActive = false;
 let currentItem = null;
+let scannedItems = {}; // Track scanned items and their quantities
 
-// Camera controls
-document.getElementById('start-camera').addEventListener('click', startCamera);
-document.getElementById('stop-camera').addEventListener('click', stopCamera);
-document.getElementById('manual-scan').addEventListener('click', manualScan);
-
-// Start camera for barcode scanning
-function startCamera() {
-    if (scannerActive) return;
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const scannerInput = document.getElementById('scanner-input');
+    const searchBtn = document.getElementById('search-btn');
     
-    navigator.mediaDevices.getUserMedia({ 
-        video: { 
-            facingMode: 'environment' // Use back camera on mobile
-        } 
-    })
-    .then(function(stream) {
-        const video = document.getElementById('video');
-        const placeholder = document.getElementById('scanner-placeholder');
-        
-        video.srcObject = stream;
-        video.style.display = 'block';
-        placeholder.style.display = 'none';
-        
-        document.getElementById('start-camera').style.display = 'none';
-        document.getElementById('stop-camera').style.display = 'inline-block';
-        
-        scannerActive = true;
-        
-        // Start QuaggaJS for barcode detection
-        Quagga.init({
-            inputStream: {
-                name: "Live",
-                type: "LiveStream",
-                target: video,
-                constraints: {
-                    width: 640,
-                    height: 480,
-                    facingMode: "environment"
-                },
-            },
-            decoder: {
-                readers: [
-                    "code_128_reader",
-                    "ean_reader",
-                    "ean_8_reader",
-                    "code_39_reader",
-                    "code_39_vin_reader",
-                    "codabar_reader",
-                    "upc_reader",
-                    "upc_e_reader",
-                    "i2of5_reader"
-                ]
-            },
-            locate: true,
-            locator: {
-                patchSize: "medium",
-                halfSample: true
-            }
-        }, function(err) {
-            if (err) {
-                console.error('QuaggaJS initialization error:', err);
-                showStatus('Camera initialization failed. Please try manual input.', 'error');
-                return;
-            }
-            Quagga.start();
-        });
-        
-        // Listen for barcode detection
-        Quagga.onDetected(function(data) {
-            const barcode = data.codeResult.code;
-            console.log('Barcode detected:', barcode);
-            processBarcode(barcode);
-        });
-        
-    })
-    .catch(function(err) {
-        console.error('Camera access error:', err);
-        showStatus('Camera access denied. Please use manual input.', 'error');
+    // Auto-focus on scanner input
+    scannerInput.focus();
+    
+    // Handle Enter key press
+    scannerInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            searchBarcode();
+        }
     });
-}
+    
+    // Handle search button click
+    searchBtn.addEventListener('click', searchBarcode);
+});
 
-// Stop camera
-function stopCamera() {
-    if (!scannerActive) return;
-    
-    const video = document.getElementById('video');
-    const placeholder = document.getElementById('scanner-placeholder');
-    
-    if (video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
-        video.srcObject = null;
-    }
-    
-    video.style.display = 'none';
-    placeholder.style.display = 'flex';
-    
-    document.getElementById('start-camera').style.display = 'inline-block';
-    document.getElementById('stop-camera').style.display = 'none';
-    
-    Quagga.stop();
-    scannerActive = false;
-}
-
-// Manual barcode input
-function manualScan() {
-    const barcode = document.getElementById('manual-barcode').value.trim();
+// Search for barcode
+function searchBarcode() {
+    const barcode = document.getElementById('scanner-input').value.trim();
     if (barcode) {
         processBarcode(barcode);
-        document.getElementById('manual-barcode').value = '';
+        document.getElementById('scanner-input').value = '';
     } else {
         showStatus('Please enter a barcode number', 'error');
     }
 }
 
-// Process scanned barcode
+// Process scanned barcode with auto-increment
 function processBarcode(barcode) {
-    showStatus('Processing barcode...', 'info');
+    // Check if this barcode was already scanned
+    if (scannedItems[barcode]) {
+        // Auto-increment quantity
+        const currentQty = parseInt(document.getElementById('quantity-delivered').value) || 0;
+        const newQty = currentQty + 1;
+        const maxQty = parseInt(document.getElementById('quantity-delivered').max);
+        
+        if (newQty <= maxQty) {
+            document.getElementById('quantity-delivered').value = newQty;
+            scannedItems[barcode] = newQty;
+            showStatus(`✅ Quantity increased to ${newQty}`, 'success');
+        } else {
+            showStatus(`❌ Cannot exceed available stock (${maxQty})`, 'error');
+        }
+        return;
+    }
+    
+    showStatus('🔍 Processing barcode...', 'info');
     
     fetch('/delivery/scan', {
         method: 'POST',
@@ -366,15 +306,16 @@ function processBarcode(barcode) {
             currentItem = data.item;
             populateItemDetails(data.item);
             enableDeliveryForm();
-            showStatus('Item found successfully!', 'success');
+            scannedItems[barcode] = 1; // Track this barcode
+            showStatus('✅ Item found successfully!', 'success');
         } else {
-            showStatus(data.error || 'Item not found', 'error');
+            showStatus(data.error || '❌ Item not found', 'error');
             clearItemDetails();
         }
     })
     .catch(error => {
         console.error('Error processing barcode:', error);
-        showStatus('Error processing barcode. Please try again.', 'error');
+        showStatus('❌ Error processing barcode. Please try again.', 'error');
     });
 }
 
@@ -404,6 +345,7 @@ function clearItemDetails() {
     document.getElementById('delivery-form').reset();
     document.getElementById('inventory-id').value = '';
     document.getElementById('scanned-barcode').value = '';
+    scannedItems = {}; // Reset scanned items
     disableDeliveryForm();
 }
 
@@ -463,14 +405,16 @@ document.getElementById('delivery-form').addEventListener('submit', function(e) 
         showStatus('Quantity exceeds available stock', 'error');
         return;
     }
+    
+    // Reset scanned items after successful submission
+    scannedItems = {};
 });
-
 </script>
 
 <!-- Footer -->
 <footer class="bg-gray-800 text-white py-4 mt-8">
     <div class="max-w-7xl mx-auto px-4 text-center">
-{{ ... }}
+        <p>&copy; 2024 Uniform Inventory System. All rights reserved.</p>
     </div>
 </footer>
 

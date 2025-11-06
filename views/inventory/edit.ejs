@@ -281,34 +281,6 @@
                 alert('Please fill in all required fields.');
             }
         });
-
-        // Mobile menu toggle
-        const mobileMenuButton = document.querySelector('.md\\:hidden button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        if (mobileMenuButton && mobileMenu) {
-            mobileMenuButton.addEventListener('click', function() {
-                mobileMenu.classList.toggle('hidden');
-            });
-        }
-        
-        // User dropdown toggle
-        const userButton = document.querySelector('.relative button');
-        const userDropdown = document.querySelector('.relative .absolute');
-        
-        if (userButton && userDropdown) {
-            userButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                userDropdown.classList.toggle('hidden');
-            });
-            
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!userButton.contains(event.target)) {
-                    userDropdown.classList.add('hidden');
-                }
-            });
-        }
     });
 </script>
 

@@ -4,7 +4,6 @@ const Inventory = require('../models/Inventory');
 const { requireAuth, requireStaff } = require('../middleware/auth');
 const router = express.Router();
 
-// Flash messages middleware
 // All delivery routes require authentication
 router.use(requireAuth);
 
@@ -131,7 +130,7 @@ router.get('/history', requireStaff, async (req, res) => {
     }
 
     const deliveries = await Delivery.find(filter)
-      .populate('inventoryItem', 'itemName category size color')
+      .populate('inventoryItem', 'itemName category size color price')
       .populate('deliveredBy', 'username')
       .sort({ deliveryDate: -1 })
       .skip(skip)

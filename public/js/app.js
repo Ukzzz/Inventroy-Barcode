@@ -189,7 +189,7 @@ const App = {
     // -----------------------------
     utils: {
         formatCurrency(amount) {
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+            return new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR' }).format(amount);
         },
         formatDate(date) {
             return new Date(date).toLocaleDateString();
