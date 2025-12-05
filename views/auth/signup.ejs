@@ -1,204 +1,674 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - Uniform Inventory System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .bg-animation {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-animation .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .bg-animation .orb:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            top: -100px;
+            right: -100px;
+        }
+
+        .bg-animation .orb:nth-child(2) {
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            bottom: 10%;
+            left: -80px;
+            animation-delay: 2s;
+        }
+
+        .bg-animation .orb:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            top: 40%;
+            right: 20%;
+            animation-delay: 4s;
+        }
+
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+
+            50% {
+                transform: translateY(-30px) scale(1.05);
+            }
         }
-        .float-animation {
-            animation: float 6s ease-in-out infinite;
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
         }
-        @keyframes fadeInUp {
+
+        .signup-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(40px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        .fade-in-up {
-            animation: fadeInUp 0.6s ease-out;
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 36px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 32px;
         }
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        .logo-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .logo-icon:hover {
+            transform: translateY(-5px) rotateZ(-5deg);
+            box-shadow: 0 20px 50px rgba(16, 185, 129, 0.5);
+        }
+
+        .logo-icon i {
+            font-size: 32px;
+            color: white;
+        }
+
+        .logo-title {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #6ee7b7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
+
+        .logo-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .alert i {
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 15px;
+            transition: color 0.3s ease;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 14px 14px 44px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .form-input:focus {
+            border-color: #10b981;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+        }
+
+        .form-input:focus+.input-icon,
+        .input-wrapper:focus-within .input-icon {
+            color: #10b981;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .password-strength {
+            margin-top: 8px;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .strength-text {
+            font-size: 11px;
+            margin-top: 4px;
+            color: rgba(255, 255, 255, 0.5);
+            display: block;
+        }
+
+        .strength-weak .strength-fill {
+            width: 33%;
+            background: #ef4444;
+        }
+
+        .strength-weak .strength-text {
+            color: #fca5a5;
+        }
+
+        .strength-medium .strength-fill {
+            width: 66%;
+            background: #f59e0b;
+        }
+
+        .strength-medium .strength-text {
+            color: #fcd34d;
+        }
+
+        .strength-strong .strength-fill {
+            width: 100%;
+            background: #10b981;
+        }
+
+        .strength-strong .strength-text {
+            color: #6ee7b7;
+        }
+
+        .match-indicator {
+            position: absolute;
+            right: 44px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .match-indicator.show {
+            opacity: 1;
+        }
+
+        .match-indicator.match {
+            color: #10b981;
+        }
+
+        .match-indicator.no-match {
+            color: #ef4444;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-submit:hover::before {
+            opacity: 1;
+        }
+
+        .btn-submit span,
+        .btn-submit i {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 28px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
+
+        .divider-text {
+            padding: 0 16px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .login-link {
+            text-align: center;
+        }
+
+        .login-link a {
+            color: #6ee7b7;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #a7f3d0;
+            gap: 12px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 28px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .footer-secure {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .footer-secure i {
+            color: #10b981;
+        }
+
+        .footer-copyright {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 480px) {
+            .signup-container {
+                padding: 16px;
+            }
+
+            .glass-card {
+                padding: 28px 20px;
+                border-radius: 20px;
+            }
+
+            .logo-title {
+                font-size: 22px;
+            }
+
+            .logo-icon {
+                width: 64px;
+                height: 64px;
+            }
+
+            .logo-icon i {
+                font-size: 28px;
+            }
         }
     </style>
 </head>
-<body class="gradient-bg min-h-screen flex items-center justify-center relative overflow-hidden">
-    <!-- Animated Background Elements -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-20 left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 float-animation"></div>
-        <div class="absolute top-40 right-10 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 float-animation" style="animation-delay: 2s;"></div>
-        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 float-animation" style="animation-delay: 4s;"></div>
-    </div>
 
-    <div class="max-w-md w-full space-y-8 p-8 relative z-10 fade-in-up">
-        <div class="glass-effect rounded-2xl shadow-2xl p-8 border border-white border-opacity-20">
-            <!-- Logo and Title -->
-            <div class="text-center mb-8">
-                <div class="mx-auto h-20 w-20 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg transform hover:scale-110 transition-transform duration-300">
-                    <i class="fas fa-user-plus text-white text-3xl"></i>
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <div class="signup-container">
+        <div class="glass-card">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-user-plus"></i>
                 </div>
-                <h2 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">Join Us Today</h2>
-                <p class="text-gray-600 text-lg">Create your account to get started</p>
+                <h1 class="logo-title">Create Account</h1>
+                <p class="logo-subtitle">Join us and start managing inventory</p>
             </div>
 
-            <!-- Flash Messages -->
-            <% if (typeof success !== 'undefined' && success.length > 0) { %>
-                <div class="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded-lg mb-4 shadow-md" role="alert">
-                    <div class="flex items-center">
-                        <i class="fas fa-check-circle mr-3 text-xl"></i>
-                        <span class="block sm:inline"><%= success.join(', ') %></span>
-                    </div>
+            <% if (typeof success !=='undefined' && success.length> 0) { %>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <span>
+                        <%= success.join(', ') %></span>
                 </div>
             <% } %>
             
-            <% if (typeof error !== 'undefined' && error.length > 0) { %>
-                <div class="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg mb-4 shadow-md" role="alert">
-                    <div class="flex items-center">
-                        <i class="fas fa-exclamation-circle mr-3 text-xl"></i>
-                        <span class="block sm:inline"><%= error.join(', ') %></span>
-                    </div>
+            <% if (typeof error !== ' undefined' && error.length> 0) { %>
+                            <div class="alert alert-error">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>
+                                    <%= error.join(', ') %></span>
                 </div>
             <% } %>
 
-            <!-- Signup Form -->
-            <form class="mt-8 space-y-6" action="/signup" method="POST">
-                <div class="space-y-4">
-                    <div>
-                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
-                            Username *
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-user text-gray-400"></i>
-                            </div>
-                            <input id="username" name="username" type="text" required minlength="3" maxlength="30"
-                                   class="appearance-none relative block w-full pl-10 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
-                                   placeholder="Enter username (min 3 characters)">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
-                            Email Address *
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-envelope text-gray-400"></i>
-                            </div>
-                            <input id="email" name="email" type="email" required 
-                                   class="appearance-none relative block w-full pl-10 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
-                                   placeholder="Enter your email">
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
-                            Password *
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400"></i>
-                            </div>
-                            <input id="password" name="password" type="password" required minlength="6"
-                                   class="appearance-none relative block w-full pl-10 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
-                                   placeholder="Enter password (min 6 characters)">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">
-                            Confirm Password *
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400"></i>
-                            </div>
-                            <input id="confirmPassword" name="confirmPassword" type="password" required minlength="6"
-                                   class="appearance-none relative block w-full pl-10 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
-                                   placeholder="Confirm your password">
-                        </div>
+            <form action="/signup" method="POST" id="signupForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" name="username" class="form-input" placeholder="Choose a username" required minlength="3" maxlength="30" autocomplete="username">
+                        <i class="fas fa-user input-icon"></i>
                     </div>
                 </div>
 
-                <div class="pt-4">
-                    <button type="submit" 
-                            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                        <span class="absolute left-0 inset-y-0 flex items-center pl-4">
-                            <i class="fas fa-user-plus text-white text-lg"></i>
-                        </span>
-                        Create My Account
-                    </button>
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required autocomplete="email">
+                        <i class="fas fa-envelope input-icon"></i>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" class="form-input" placeholder="Create a strong password" required minlength="6" autocomplete="new-password">
+                        <i class="fas fa-lock input-icon"></i>
+                        <button type="button" class="password-toggle" id="toggleBtn1"><i class="fas fa-eye" id="toggleIcon1"></i></button>
+                    </div>
+                    <div class="password-strength" id="strengthIndicator">
+                        <div class="strength-bar"><div class="strength-fill"></div></div>
+                        <span class="strength-text">Enter password</span>
+                    </div>
                 </div>
 
-                <div class="text-center pt-4">
-                    <div class="relative">
-                        <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-gray-300"></div>
-                        </div>
-                        <div class="relative flex justify-center text-sm">
-                            <span class="px-2 bg-white text-gray-500">Already a member?</span>
-                        </div>
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="Confirm your password" required minlength="6" autocomplete="new-password">
+                        <i class="fas fa-lock input-icon"></i>
+                        <span class="match-indicator" id="matchIndicator"><i class="fas fa-check-circle"></i></span>
+                        <button type="button" class="password-toggle" id="toggleBtn2"><i class="fas fa-eye" id="toggleIcon2"></i></button>
                     </div>
-                    <a href="/login" class="mt-4 inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold transition-colors duration-300">
-                        <i class="fas fa-sign-in-alt mr-2"></i>
-                        Sign in to your account
-                        <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
                 </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <i class="fas fa-rocket"></i>
+                    <span>Create Account</span>
+                </button>
             </form>
+
+            <div class="divider"><span class="divider-text">Already a member?</span></div>
+
+            <div class="login-link">
+                <a href="/login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign in to your account
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
         </div>
-        
-        <!-- Footer -->
-        <div class="text-center text-white mt-8">
-            <p class="text-sm opacity-90 flex items-center justify-center">
-                <i class="fas fa-shield-alt mr-2"></i>
-                Secure & Reliable Inventory Management
-            </p>
-            <p class="text-xs mt-2 opacity-75">&copy; 2024 Uniform Inventory System. All rights reserved.</p>
+
+        <div class="footer">
+            <div class="footer-secure">
+                <i class="fas fa-shield-halved"></i>
+                <span>Your data is encrypted and secure</span>
+            </div>
+            <p class="footer-copyright">&copy; 2024 Uniform Inventory System</p>
         </div>
     </div>
 
     <script>
-        // Auto-hide flash messages
-        document.addEventListener('DOMContentLoaded', function() {
-            const flashMessages = document.querySelectorAll('[role="alert"]');
-            flashMessages.forEach(function(message) {
-                setTimeout(function() {
-                    message.style.opacity = '0';
-                    setTimeout(function() {
-                        message.remove();
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === ' password') {
+                input.type = 'text'; icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye');
+            }
+        }
+        document.getElementById('toggleBtn1').addEventListener('click', function () {
+            togglePassword('password', 'toggleIcon1');
+        });
+        document.getElementById('toggleBtn2').addEventListener('click', function () {
+            togglePassword('confirmPassword', 'toggleIcon2');
+        }); const
+            passwordInput = document.getElementById('password'); const
+                strengthIndicator = document.getElementById('strengthIndicator'); const
+                    strengthText = strengthIndicator.querySelector('.strength-text');
+        passwordInput.addEventListener('input', function () {
+            const password = this.value;
+            strengthIndicator.classList.remove('strength-weak', 'strength-medium'
+                , 'strength-strong'); if (password.length === 0) {
+                    strengthText.textContent = 'Enter password'; return;
+                } let strength = 0; if
+                (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            if (strength <= 2) {
+                strengthIndicator.classList.add('strength-weak');
+                strengthText.textContent = 'Weak password';
+            } else if (strength <= 4) {
+                strengthIndicator.classList.add('strength-medium');
+                strengthText.textContent = 'Medium strength';
+            } else {
+                strengthIndicator.classList.add('strength-strong');
+                strengthText.textContent = 'Strong password';
+            } checkPasswordMatch();
+        });
+        const confirmPasswordInput = document.getElementById('confirmPassword'); const
+            matchIndicator = document.getElementById('matchIndicator');
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch); function
+            checkPasswordMatch() {
+                const password = passwordInput.value; const
+                    confirmPassword = confirmPasswordInput.value; if (confirmPassword.length === 0) { matchIndicator.classList.remove('show', 'match', 'no-match'); return; }
+            matchIndicator.classList.add('show'); if (password === confirmPassword) {
+                matchIndicator.classList.remove('no-match');
+                matchIndicator.classList.add('match');
+                matchIndicator.innerHTML = '<i class="fas fa-check-circle"></i>';
+            } else {
+                matchIndicator.classList.remove('match');
+                matchIndicator.classList.add('no-match');
+                matchIndicator.innerHTML = '<i class="fas fa-times-circle"></i>';
+            }
+        }
+        document.getElementById('signupForm').addEventListener('submit', function (e) {
+            const password = passwordInput.value; const
+                confirmPassword = confirmPasswordInput.value; if (password !== confirmPassword) {
+                e.preventDefault(); alert('Passwords do not match!');
+                confirmPasswordInput.focus(); return false;
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const
+            alerts = document.querySelectorAll('.alert'); alerts.forEach(function (alert) {
+                setTimeout(function () {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-10px)'; setTimeout(function () {
+                        alert.remove();
                     }, 300);
                 }, 5000);
             });
-
-            // Password confirmation validation
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(e) {
-                const password = document.getElementById('password').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
-                
-                if (password !== confirmPassword) {
-                    e.preventDefault();
-                    alert('Passwords do not match!');
-                    return false;
-                }
-            });
-        });
-    </script>
+        }); </script>
 </body>
+
 </html>

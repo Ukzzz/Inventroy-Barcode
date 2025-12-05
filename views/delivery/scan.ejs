@@ -1,425 +1,573 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> - Uniform Inventory System</title>
-    
-    <!-- Tailwind CSS -->
+    <title>
+        <%= title %> - Uniform Inventory System
+    </title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .cart-item {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .pulse-success {
+            animation: pulseSuccess 0.5s ease;
+        }
+
+        @keyframes pulseSuccess {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
+
+<body class="bg-gray-100 min-h-screen">
     <!-- Navigation -->
-    <nav class="bg-blue-600 shadow-lg">
+    <nav class="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="/dashboard" class="text-white text-xl font-bold">
-                        <i class="fas fa-boxes mr-2"></i>
-                        Uniform Inventory
+                    <a href="/dashboard" class="text-white text-xl font-bold flex items-center gap-2">
+                        <i class="fas fa-boxes-stacked"></i>
+                        <span class="hidden sm:inline">Uniform Inventory</span>
                     </a>
                 </div>
-                
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-4">
-                    <a href="/dashboard" class="text-white hover:text-blue-200 px-3 py-2 rounded-md">
+                <div class="hidden md:flex items-center space-x-2">
+                    <a href="/dashboard"
+                        class="text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg transition">
                         <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
                     </a>
-                    <a href="/inventory" class="text-white hover:text-blue-200 px-3 py-2 rounded-md">
+                    <a href="/inventory"
+                        class="text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg transition">
                         <i class="fas fa-warehouse mr-1"></i> Inventory
                     </a>
-                    <a href="/delivery/scan" class="text-white hover:text-blue-200 px-3 py-2 rounded-md bg-blue-700">
+                    <a href="/delivery/scan" class="text-white bg-white/20 px-3 py-2 rounded-lg">
                         <i class="fas fa-qrcode mr-1"></i> Scan Delivery
                     </a>
-                    <a href="/delivery/history" class="text-white hover:text-blue-200 px-3 py-2 rounded-md">
+                    <a href="/delivery/history"
+                        class="text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg transition">
                         <i class="fas fa-history mr-1"></i> Delivery History
                     </a>
-                    <a href="/reports" class="text-white hover:text-blue-200 px-3 py-2 rounded-md">
+                    <a href="/reports"
+                        class="text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg transition">
                         <i class="fas fa-chart-bar mr-1"></i> Reports
                     </a>
-                    
-                    <% if (user.role === 'admin') { %>
-                    <a href="/register" class="text-white hover:text-blue-200 px-3 py-2 rounded-md">
-                        <i class="fas fa-user-plus mr-1"></i> Add User
-                    </a>
-                    <% } %>
-                    
-                    <!-- User Info -->
-                    <div class="text-white px-3 py-2 flex items-center">
-                        <i class="fas fa-user mr-2"></i>
-                        <span class="mr-1"><%= user.username %></span>
-                        <span class="text-xs text-blue-200">(<%= user.role %>)</span>
-                    </div>
-                    
-                    <!-- Logout Button -->
-                    <form method="POST" action="/logout" class="inline">
-                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md font-medium transition duration-150 ease-in-out flex items-center">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
-                            Logout
-                        </button>
-                    </form>
+                    <% if (user.role==='admin' ) { %>
+                        <a href="/register"
+                            class="text-white/90 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg transition">
+                            <i class="fas fa-user-plus mr-1"></i> Add User
+                        </a>
+                        <% } %>
+                            <div class="text-white/80 px-3 py-2 flex items-center border-l border-white/20 ml-2">
+                                <i class="fas fa-user mr-2"></i>
+                                <span class="mr-1">
+                                    <%= user.username %>
+                                </span>
+                                <span class="text-xs text-white/60">(<%= user.role %>)</span>
+                            </div>
+                            <form method="POST" action="/logout" class="inline">
+                                <button type="submit"
+                                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span class="hidden lg:inline">Logout</span>
+                                </button>
+                            </form>
                 </div>
-                
-                <!-- Mobile menu button -->
                 <div class="md:hidden">
-                    <button type="button" class="text-white hover:text-blue-200 focus:outline-none focus:text-blue-200">
+                    <button type="button" id="mobile-menu-btn" class="text-white hover:text-blue-200 p-2">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
             </div>
         </div>
-        
-        <!-- Mobile Menu -->
         <div class="md:hidden hidden" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-blue-700">
-                <a href="/dashboard" class="text-white hover:text-blue-200 block px-3 py-2 rounded-md">
-                    <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
-                </a>
-                <a href="/inventory" class="text-white hover:text-blue-200 block px-3 py-2 rounded-md">
-                    <i class="fas fa-warehouse mr-2"></i> Inventory
-                </a>
-                <a href="/delivery/scan" class="text-white hover:text-blue-200 block px-3 py-2 rounded-md bg-blue-600">
-                    <i class="fas fa-qrcode mr-2"></i> Scan Delivery
-                </a>
-                <a href="/delivery/history" class="text-white hover:text-blue-200 block px-3 py-2 rounded-md">
-                    <i class="fas fa-history mr-2"></i> Delivery History
-                </a>
-                <a href="/delivery/reports" class="text-white hover:text-blue-200 block px-3 py-2 rounded-md">
-                    <i class="fas fa-chart-bar mr-2"></i> Reports
-                </a>
-                <% if (user.role === 'admin') { %>
-                <a href="/register" class="text-white hover:text-blue-200 block px-3 py-2 rounded-md">
-                    <i class="fas fa-user-plus mr-2"></i> Add User
-                </a>
-                <% } %>
-                <form method="POST" action="/logout" class="block">
-                    <button type="submit" class="w-full text-left text-white hover:text-blue-200 block px-3 py-2 rounded-md">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                    </button>
-                </form>
+            <div class="px-2 pt-2 pb-3 space-y-1 bg-blue-700">
+                <a href="/dashboard" class="text-white hover:bg-blue-600 block px-3 py-2 rounded-md"><i
+                        class="fas fa-tachometer-alt mr-2"></i> Dashboard</a>
+                <a href="/inventory" class="text-white hover:bg-blue-600 block px-3 py-2 rounded-md"><i
+                        class="fas fa-warehouse mr-2"></i> Inventory</a>
+                <a href="/delivery/scan" class="text-white bg-blue-600 block px-3 py-2 rounded-md"><i
+                        class="fas fa-qrcode mr-2"></i> Scan Delivery</a>
+                <a href="/delivery/history" class="text-white hover:bg-blue-600 block px-3 py-2 rounded-md"><i
+                        class="fas fa-history mr-2"></i> Delivery History</a>
+                <a href="/reports" class="text-white hover:bg-blue-600 block px-3 py-2 rounded-md"><i
+                        class="fas fa-chart-bar mr-2"></i> Reports</a>
+                <% if (user.role==='admin' ) { %>
+                    <a href="/register" class="text-white hover:bg-blue-600 block px-3 py-2 rounded-md"><i
+                            class="fas fa-user-plus mr-2"></i> Add User</a>
+                    <% } %>
+                        <form method="POST" action="/logout" class="block">
+                            <button type="submit"
+                                class="w-full text-left text-white hover:bg-blue-600 block px-3 py-2 rounded-md"><i
+                                    class="fas fa-sign-out-alt mr-2"></i> Logout</button>
+                        </form>
             </div>
         </div>
     </nav>
 
-<!-- Header -->
-<div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">Scan Barcode for Delivery</h1>
-    <p class="text-gray-600">Use your POSPRO PBS-QR1000 scanner to process deliveries</p>
-</div>
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="mb-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-3">
+                <i class="fas fa-barcode text-blue-600"></i>
+                Scan Barcode for Delivery
+            </h1>
+            <p class="text-gray-600 mt-1">Scan multiple items and assign them to a customer</p>
+        </div>
 
-<!-- Main Grid -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    
-    <!-- Scanner Section -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">
-            <i class="fas fa-barcode mr-2"></i>
-            Scan Barcode
-        </h2>
-
-        <!-- Hardware Scanner Input -->
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-6">
-            <div class="flex items-start space-x-4">
-                <div class="flex-shrink-0">
-                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
-                        <i class="fas fa-barcode text-white text-2xl"></i>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Left Column: Scanner + Cart -->
+            <div class="space-y-6">
+                <!-- Scanner Section -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-barcode text-blue-600"></i>
+                        Barcode Scanner
+                    </h2>
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-5">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div
+                                class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-qrcode text-white text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Scanner Ready</h3>
+                                <p class="text-sm text-gray-600">Click below and scan items</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="scanner-input" placeholder="👉 Click here and scan..." autofocus
+                                class="flex-1 px-4 py-3 text-lg border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <button id="search-btn"
+                                class="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-lg font-medium transition flex items-center gap-2">
+                                <i class="fas fa-plus"></i>
+                                <span class="hidden sm:inline">Add</span>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-3 flex items-center gap-1">
+                            <i class="fas fa-lightbulb text-yellow-500"></i>
+                            <span>Tip: Scanner should send Enter key after each scan</span>
+                        </p>
                     </div>
                 </div>
 
-                <div class="flex-1">
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">
-                        <i class="fas fa-keyboard mr-2 text-blue-600"></i>
-                        Scan with POSPRO Scanner
-                    </h3>
-
-                    <p class="text-sm text-gray-600 mb-4">
-                        Click in the field below and scan with your POSPRO PBS-QR1000 barcode scanner
-                    </p>
-
-                    <div class="flex space-x-2">
-                        <input type="text" id="scanner-input" 
-                               placeholder="👉 Click here and scan barcode..." 
-                               autofocus
-                               class="flex-1 px-4 py-3 text-lg border-2 border-blue-400 rounded-md 
-                                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
-
-                        <button id="search-btn" 
-                                class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md 
-                                       font-medium transition duration-150 ease-in-out">
-                            <i class="fas fa-search mr-2"></i>
-                            Search
+                <!-- Shopping Cart -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                            <i class="fas fa-shopping-cart text-green-600"></i>
+                            Scanned Items
+                            <span id="cart-count"
+                                class="bg-blue-100 text-blue-700 text-sm px-2 py-0.5 rounded-full">0</span>
+                        </h2>
+                        <button id="clear-cart-btn" class="text-red-500 hover:text-red-700 text-sm font-medium hidden">
+                            <i class="fas fa-trash-alt mr-1"></i> Clear All
                         </button>
                     </div>
+                    <div id="empty-cart" class="text-center py-8 text-gray-400">
+                        <i class="fas fa-box-open text-4xl mb-3"></i>
+                        <p>No items scanned yet</p>
+                        <p class="text-sm">Scan barcodes to add items</p>
+                    </div>
+                    <div id="cart-items" class="space-y-3 hidden max-h-80 overflow-y-auto"></div>
+                    <div id="cart-summary" class="hidden mt-4 pt-4 border-t border-gray-200">
+                        <div class="flex justify-between text-sm text-gray-600 mb-1">
+                            <span>Total Items:</span>
+                            <span id="total-items" class="font-semibold">0</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-bold text-gray-800">
+                            <span>Total Amount:</span>
+                            <span id="total-amount" class="text-green-600">Rs 0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                    <p class="text-xs text-gray-500 mt-2">
-                        <i class="fas fa-lightbulb text-yellow-500"></i> 
-                        <strong>Tip:</strong> Configure your POSPRO as USB-HID (Keyboard mode) with Enter key suffix for automatic search
-                    </p>
+            <!-- Right Column: Delivery Form -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-truck text-indigo-600"></i>
+                    Delivery Information
+                </h2>
+                <form id="delivery-form" class="space-y-5">
+                    <div>
+                        <label for="customer-name" class="block text-sm font-medium text-gray-700 mb-1">
+                            Customer Name <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="customer-name" name="customerName" required
+                                class="w-full px-4 py-3 pl-11 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter customer name">
+                            <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                        <div class="relative">
+                            <textarea id="notes" name="notes" rows="3"
+                                class="w-full px-4 py-3 pl-11 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Any additional notes..."></textarea>
+                            <i class="fas fa-sticky-note absolute left-4 top-4 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <button type="submit" id="submit-delivery" disabled
+                        class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 
+                                   disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed
+                                   text-white px-6 py-4 rounded-xl font-semibold transition-all duration-200 
+                                   flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 disabled:shadow-none">
+                        <i class="fas fa-check-circle" id="submit-icon"></i>
+                        <span id="submit-text">Record Delivery</span>
+                        <span id="submit-items-count" class="bg-white/20 px-2 py-0.5 rounded-full text-sm hidden">(0
+                            items)</span>
+                    </button>
+                </form>
+                <div id="status-message" class="mt-4 hidden"></div>
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                    <h3 class="font-medium text-blue-800 mb-2 flex items-center gap-2">
+                        <i class="fas fa-info-circle"></i>
+                        How it works
+                    </h3>
+                    <ol class="text-sm text-blue-700 space-y-1 list-decimal list-inside">
+                        <li>Scan multiple items with your barcode scanner</li>
+                        <li>Adjust quantities as needed</li>
+                        <li>Enter customer name</li>
+                        <li>Click "Record Delivery" to save all items</li>
+                    </ol>
                 </div>
             </div>
         </div>
     </div>
 
-
-
-        <!-- Delivery Form Section -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">
-                <i class="fas fa-shipping-fast mr-2"></i>
-                Delivery Information
-            </h2>
-            
-            <!-- Item Details (Auto-filled after scan) -->
-            <div id="item-details" class="hidden mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h3 class="font-medium text-blue-900 mb-2">Scanned Item</h3>
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                    <div><span class="font-medium">Name:</span> <span id="item-name">-</span></div>
-                    <div><span class="font-medium">Category:</span> <span id="item-category">-</span></div>
-                    <div><span class="font-medium">Size:</span> <span id="item-size">-</span></div>
-                    <div><span class="font-medium">Color:</span> <span id="item-color">-</span></div>
-                    <div><span class="font-medium">Available Stock:</span> <span id="item-stock">-</span></div>
-                    <div><span class="font-medium">Price:</span> <span id="item-price">-</span></div>
-                </div>
-                <div class="mt-2">
-                    <span class="font-medium">Barcode:</span> <span id="item-barcode" class="font-mono text-sm">-</span>
-                </div>
-            </div>
-
-            <!-- Delivery Form -->
-            <form id="delivery-form" action="/delivery/record" method="POST" class="space-y-4">
-                <input type="hidden" id="inventory-id" name="inventoryId">
-                <input type="hidden" id="scanned-barcode" name="barcode">
-                
-                <div>
-                    <label for="customer-name" class="block text-sm font-medium text-gray-700 mb-1">
-                        Customer Name *
-                    </label>
-                    <input type="text" id="customer-name" name="customerName" required 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                           placeholder="Enter customer name">
-                </div>
-                
-                <div>
-                    <label for="quantity-delivered" class="block text-sm font-medium text-gray-700 mb-1">
-                        Quantity to Deliver *
-                    </label>
-                    <input type="number" id="quantity-delivered" name="quantityDelivered" required min="1" 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                           placeholder="Enter quantity">
-                </div>
-                
-                <div>
-                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">
-                        Notes (Optional)
-                    </label>
-                    <textarea id="notes" name="notes" rows="3" 
-                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                              placeholder="Any additional notes..."></textarea>
-                </div>
-                
-                <button type="submit" id="submit-delivery" disabled
-                        class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md font-medium transition duration-150 ease-in-out">
-                    <i class="fas fa-check mr-2"></i>
-                    Record Delivery
-                </button>
-            </form>
-            
-            <!-- Status Messages -->
-            <div id="status-message" class="mt-4 hidden"></div>
+    <footer class="bg-gray-800 text-white py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-400">&copy; 2024 Uniform Inventory System. All rights reserved.</p>
         </div>
-    </div>
-</div>
+    </footer>
 
-<script>
-let currentItem = null;
-let scannedItems = {}; // Track scanned items and their quantities
+    <script>
+        // Cart to store all scanned items
+        let cart = {};
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const scannerInput = document.getElementById('scanner-input');
-    const searchBtn = document.getElementById('search-btn');
-    
-    // Auto-focus on scanner input
-    scannerInput.focus();
-    
-    // Handle Enter key press
-    scannerInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            searchBarcode();
+        document.addEventListener('DOMContentLoaded', function () {
+            const scannerInput = document.getElementById('scanner-input');
+            const searchBtn = document.getElementById('search-btn');
+            const clearCartBtn = document.getElementById('clear-cart-btn');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const deliveryForm = document.getElementById('delivery-form');
+
+            scannerInput.focus();
+
+            scannerInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addItemToCart();
+                }
+            });
+
+            searchBtn.addEventListener('click', addItemToCart);
+            clearCartBtn.addEventListener('click', clearCart);
+
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function () {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            deliveryForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                submitDelivery();
+            });
+        });
+
+        function addItemToCart() {
+            const barcode = document.getElementById('scanner-input').value.trim();
+            if (!barcode) {
+                showStatus('Please scan or enter a barcode', 'error');
+                return;
+            }
+
+            // If already in cart, increment quantity
+            if (cart[barcode]) {
+                const maxQty = cart[barcode].item.quantity;
+                if (cart[barcode].qty < maxQty) {
+                    cart[barcode].qty++;
+                    updateCartUI();
+                    showStatus('✅ Quantity increased for ' + cart[barcode].item.itemName, 'success');
+                } else {
+                    showStatus('❌ Max stock reached for ' + cart[barcode].item.itemName, 'error');
+                }
+                document.getElementById('scanner-input').value = '';
+                document.getElementById('scanner-input').focus();
+                return;
+            }
+
+            showStatus('🔍 Searching...', 'info');
+
+            fetch('/delivery/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ barcode: barcode })
+            })
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        cart[barcode] = {
+                            item: data.item,
+                            qty: 1
+                        };
+                        updateCartUI();
+                        showStatus('✅ Added: ' + data.item.itemName, 'success');
+                        document.getElementById('cart-count').classList.add('pulse-success');
+                        setTimeout(function () {
+                            document.getElementById('cart-count').classList.remove('pulse-success');
+                        }, 500);
+                    } else {
+                        showStatus(data.error || '❌ Item not found', 'error');
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                    showStatus('❌ Error processing barcode', 'error');
+                })
+                .finally(function () {
+                    document.getElementById('scanner-input').value = '';
+                    document.getElementById('scanner-input').focus();
+                });
         }
-    });
-    
-    // Handle search button click
-    searchBtn.addEventListener('click', searchBarcode);
-});
 
-// Search for barcode
-function searchBarcode() {
-    const barcode = document.getElementById('scanner-input').value.trim();
-    if (barcode) {
-        processBarcode(barcode);
-        document.getElementById('scanner-input').value = '';
-    } else {
-        showStatus('Please enter a barcode number', 'error');
-    }
-}
+        function updateCartUI() {
+            const cartItemsDiv = document.getElementById('cart-items');
+            const emptyCart = document.getElementById('empty-cart');
+            const cartSummary = document.getElementById('cart-summary');
+            const cartCount = document.getElementById('cart-count');
+            const clearCartBtn = document.getElementById('clear-cart-btn');
+            const submitBtn = document.getElementById('submit-delivery');
+            const submitItemsCount = document.getElementById('submit-items-count');
 
-// Process scanned barcode with auto-increment
-function processBarcode(barcode) {
-    // Check if this barcode was already scanned
-    if (scannedItems[barcode]) {
-        // Auto-increment quantity
-        const currentQty = parseInt(document.getElementById('quantity-delivered').value) || 0;
-        const newQty = currentQty + 1;
-        const maxQty = parseInt(document.getElementById('quantity-delivered').max);
-        
-        if (newQty <= maxQty) {
-            document.getElementById('quantity-delivered').value = newQty;
-            scannedItems[barcode] = newQty;
-            showStatus(`✅ Quantity increased to ${newQty}`, 'success');
-        } else {
-            showStatus(`❌ Cannot exceed available stock (${maxQty})`, 'error');
+            const barcodes = Object.keys(cart);
+            const itemCount = barcodes.length;
+
+            if (itemCount === 0) {
+                cartItemsDiv.classList.add('hidden');
+                emptyCart.classList.remove('hidden');
+                cartSummary.classList.add('hidden');
+                clearCartBtn.classList.add('hidden');
+                submitBtn.disabled = true;
+                submitItemsCount.classList.add('hidden');
+                cartCount.textContent = '0';
+                return;
+            }
+
+            emptyCart.classList.add('hidden');
+            cartItemsDiv.classList.remove('hidden');
+            cartSummary.classList.remove('hidden');
+            clearCartBtn.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitItemsCount.classList.remove('hidden');
+
+            let html = '';
+            let totalItems = 0;
+            let totalAmount = 0;
+
+            barcodes.forEach(function (barcode) {
+                const cartItem = cart[barcode];
+                const item = cartItem.item;
+                const qty = cartItem.qty;
+                const itemTotal = item.price * qty;
+                totalItems += qty;
+                totalAmount += itemTotal;
+
+                const isMaxQty = qty >= item.quantity;
+                const plusBtnClass = isMaxQty ? 'opacity-50 cursor-not-allowed' : '';
+
+                html += '<div class="cart-item bg-gray-50 rounded-lg p-4 border border-gray-200">' +
+                    '<div class="flex justify-between items-start mb-2">' +
+                    '<div class="flex-1">' +
+                    '<h4 class="font-medium text-gray-800">' + item.itemName + '</h4>' +
+                    '<p class="text-sm text-gray-500">' +
+                    '<span class="inline-flex items-center gap-1"><i class="fas fa-tag"></i> ' + item.category + '</span>' +
+                    '<span class="mx-2">|</span><span>Size: ' + item.size + '</span>' +
+                    '<span class="mx-2">|</span><span>Color: ' + item.color + '</span>' +
+                    '</p>' +
+                    '<p class="text-xs text-gray-400 mt-1"><i class="fas fa-barcode mr-1"></i>' + barcode + '</p>' +
+                    '</div>' +
+                    '<button onclick="removeFromCart(\'' + barcode + '\')" class="text-red-400 hover:text-red-600 p-1">' +
+                    '<i class="fas fa-times"></i>' +
+                    '</button>' +
+                    '</div>' +
+                    '<div class="flex justify-between items-center">' +
+                    '<div class="flex items-center gap-2">' +
+                    '<button onclick="updateQuantity(\'' + barcode + '\', -1)" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-center transition">' +
+                    '<i class="fas fa-minus text-xs"></i>' +
+                    '</button>' +
+                    '<span class="w-12 text-center font-semibold">' + qty + '</span>' +
+                    '<button onclick="updateQuantity(\'' + barcode + '\', 1)" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-center transition ' + plusBtnClass + '"' + (isMaxQty ? ' disabled' : '') + '>' +
+                    '<i class="fas fa-plus text-xs"></i>' +
+                    '</button>' +
+                    '<span class="text-xs text-gray-400">(max: ' + item.quantity + ')</span>' +
+                    '</div>' +
+                    '<div class="text-right">' +
+                    '<p class="text-sm text-gray-500">Rs ' + item.price.toLocaleString() + ' × ' + qty + '</p>' +
+                    '<p class="font-semibold text-green-600">Rs ' + itemTotal.toLocaleString() + '</p>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+            });
+
+            cartItemsDiv.innerHTML = html;
+            cartCount.textContent = itemCount;
+            document.getElementById('total-items').textContent = totalItems;
+            document.getElementById('total-amount').textContent = 'Rs ' + totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            submitItemsCount.textContent = '(' + totalItems + ' item' + (totalItems > 1 ? 's' : '') + ')';
         }
-        return;
-    }
-    
-    showStatus('🔍 Processing barcode...', 'info');
-    
-    fetch('/delivery/scan', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ barcode: barcode })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            currentItem = data.item;
-            populateItemDetails(data.item);
-            enableDeliveryForm();
-            scannedItems[barcode] = 1; // Track this barcode
-            showStatus('✅ Item found successfully!', 'success');
-        } else {
-            showStatus(data.error || '❌ Item not found', 'error');
-            clearItemDetails();
+
+        function updateQuantity(barcode, delta) {
+            if (!cart[barcode]) return;
+
+            const newQty = cart[barcode].qty + delta;
+            const maxQty = cart[barcode].item.quantity;
+
+            if (newQty < 1) {
+                removeFromCart(barcode);
+                return;
+            }
+
+            if (newQty > maxQty) {
+                showStatus('❌ Cannot exceed available stock (' + maxQty + ')', 'error');
+                return;
+            }
+
+            cart[barcode].qty = newQty;
+            updateCartUI();
         }
-    })
-    .catch(error => {
-        console.error('Error processing barcode:', error);
-        showStatus('❌ Error processing barcode. Please try again.', 'error');
-    });
-}
 
-// Populate item details in the form
-function populateItemDetails(item) {
-    document.getElementById('item-name').textContent = item.itemName;
-    document.getElementById('item-category').textContent = item.category;
-    document.getElementById('item-size').textContent = item.size;
-    document.getElementById('item-color').textContent = item.color;
-    document.getElementById('item-stock').textContent = item.quantity;
-    const formattedPrice = item.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    document.getElementById('item-price').textContent = 'Rs ' + formattedPrice;
-    document.getElementById('item-barcode').textContent = item.barcode;
-    
-    document.getElementById('inventory-id').value = item.id;
-    document.getElementById('scanned-barcode').value = item.barcode;
-    
-    document.getElementById('item-details').classList.remove('hidden');
-    
-    // Set max quantity for delivery
-    document.getElementById('quantity-delivered').max = item.quantity;
-    document.getElementById('quantity-delivered').value = 1;
-}
+        function removeFromCart(barcode) {
+            delete cart[barcode];
+            updateCartUI();
+            showStatus('Item removed from cart', 'info');
+        }
 
-// Clear item details
-function clearItemDetails() {
-    document.getElementById('item-details').classList.add('hidden');
-    document.getElementById('delivery-form').reset();
-    document.getElementById('inventory-id').value = '';
-    document.getElementById('scanned-barcode').value = '';
-    scannedItems = {}; // Reset scanned items
-    disableDeliveryForm();
-}
+        function clearCart() {
+            if (Object.keys(cart).length === 0) return;
+            if (confirm('Are you sure you want to clear all items?')) {
+                cart = {};
+                updateCartUI();
+                showStatus('Cart cleared', 'info');
+            }
+        }
 
-// Enable delivery form
-function enableDeliveryForm() {
-    document.getElementById('submit-delivery').disabled = false;
-    document.getElementById('customer-name').focus();
-}
+        function submitDelivery() {
+            const customerName = document.getElementById('customer-name').value.trim();
+            const notes = document.getElementById('notes').value.trim();
 
-// Disable delivery form
-function disableDeliveryForm() {
-    document.getElementById('submit-delivery').disabled = true;
-}
+            if (!customerName) {
+                showStatus('Please enter customer name', 'error');
+                document.getElementById('customer-name').focus();
+                return;
+            }
 
-// Show status message
-function showStatus(message, type) {
-    const statusDiv = document.getElementById('status-message');
-    statusDiv.className = `mt-4 p-3 rounded-md ${getStatusClass(type)}`;
-    statusDiv.textContent = message;
-    statusDiv.classList.remove('hidden');
-    
-    // Auto-hide after 5 seconds
-    setTimeout(() => {
-        statusDiv.classList.add('hidden');
-    }, 5000);
-}
+            if (Object.keys(cart).length === 0) {
+                showStatus('Please scan at least one item', 'error');
+                return;
+            }
 
-// Get status class based on type
-function getStatusClass(type) {
-    switch(type) {
-        case 'success': return 'bg-green-100 border border-green-400 text-green-700';
-        case 'error': return 'bg-red-100 border border-red-400 text-red-700';
-        case 'info': return 'bg-blue-100 border border-blue-400 text-blue-700';
-        default: return 'bg-gray-100 border border-gray-400 text-gray-700';
-    }
-}
+            // Prepare items array - FIX: use correct property names
+            const items = [];
+            Object.keys(cart).forEach(function (barcode) {
+                items.push({
+                    inventoryId: cart[barcode].item.id,
+                    barcode: barcode,
+                    quantityDelivered: cart[barcode].qty
+                });
+            });
 
-// Form validation
-document.getElementById('delivery-form').addEventListener('submit', function(e) {
-    const customerName = document.getElementById('customer-name').value.trim();
-    const quantity = parseInt(document.getElementById('quantity-delivered').value);
-    
-    if (!customerName) {
-        e.preventDefault();
-        showStatus('Please enter customer name', 'error');
-        return;
-    }
-    
-    if (!quantity || quantity <= 0) {
-        e.preventDefault();
-        showStatus('Please enter a valid quantity', 'error');
-        return;
-    }
-    
-    if (currentItem && quantity > currentItem.quantity) {
-        e.preventDefault();
-        showStatus('Quantity exceeds available stock', 'error');
-        return;
-    }
-    
-    // Reset scanned items after successful submission
-    scannedItems = {};
-});
-</script>
+            const submitBtn = document.getElementById('submit-delivery');
+            const submitIcon = document.getElementById('submit-icon');
+            const submitText = document.getElementById('submit-text');
 
-<!-- Footer -->
-<footer class="bg-gray-800 text-white py-4 mt-8">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-        <p>&copy; 2024 Uniform Inventory System. All rights reserved.</p>
-    </div>
-</footer>
+            submitBtn.disabled = true;
+            submitIcon.className = 'fas fa-spinner fa-spin';
+            submitText.textContent = 'Processing...';
 
-<!-- Custom JavaScript -->
-<script src="/js/app.js"></script>
+            fetch('/delivery/record-multiple', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customerName: customerName,
+                    notes: notes,
+                    items: items
+                })
+            })
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        showStatus('✅ ' + data.message, 'success');
+                        cart = {};
+                        updateCartUI();
+                        document.getElementById('customer-name').value = '';
+                        document.getElementById('notes').value = '';
+                        document.getElementById('scanner-input').focus();
+                    } else {
+                        showStatus('❌ ' + data.error, 'error');
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                    showStatus('❌ Error recording delivery', 'error');
+                })
+                .finally(function () {
+                    submitBtn.disabled = Object.keys(cart).length === 0;
+                    submitIcon.className = 'fas fa-check-circle';
+                    submitText.textContent = 'Record Delivery';
+                });
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status-message');
+            var bgClass = 'bg-blue-50 border-blue-400 text-blue-700';
+            if (type === 'success') bgClass = 'bg-green-50 border-green-400 text-green-700';
+            if (type === 'error') bgClass = 'bg-red-50 border-red-400 text-red-700';
+
+            statusDiv.className = 'mt-4 p-3 rounded-lg border ' + bgClass;
+            statusDiv.textContent = message;
+            statusDiv.classList.remove('hidden');
+
+            setTimeout(function () {
+                statusDiv.classList.add('hidden');
+            }, 4000);
+        }
+    </script>
 </body>
+
 </html>

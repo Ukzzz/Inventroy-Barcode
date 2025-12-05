@@ -18,12 +18,9 @@ process.on('warning', (warning) => {
 const app = express();
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI , {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Middleware
 app.use(express.json());
@@ -70,17 +67,17 @@ app.use('/dashboard', require('./routes/dashboard'));
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).render('error', { 
+  res.status(500).render('error', {
     error: 'Something went wrong!',
-    message: err.message 
+    message: err.message
   });
 });
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).render('error', { 
+  res.status(404).render('error', {
     error: 'Page Not Found',
-    message: 'The page you are looking for does not exist.' 
+    message: 'The page you are looking for does not exist.'
   });
 });
 

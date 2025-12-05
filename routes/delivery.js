@@ -21,19 +21,19 @@ router.get('/scan', requireStaff, (req, res) => {
 router.post('/scan', requireStaff, async (req, res) => {
   try {
     const { barcode } = req.body;
-    
+
     const item = await Inventory.findOne({ barcode });
     if (!item) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Item not found with this barcode' 
+      return res.status(404).json({
+        success: false,
+        error: 'Item not found with this barcode'
       });
     }
 
     if (item.quantity <= 0) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Item is out of stock' 
+      return res.status(400).json({
+        success: false,
+        error: 'Item is out of stock'
       });
     }
 
@@ -53,18 +53,100 @@ router.post('/scan', requireStaff, async (req, res) => {
     });
   } catch (error) {
     console.error('Barcode scan error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Error processing barcode scan' 
+    res.status(500).json({
+      success: false,
+      error: 'Error processing barcode scan'
     });
   }
 });
 
-// Record delivery
+// Record multiple items delivery - FIX: Allows multiple items from different categories to same customer
+router.post('/record-multiple', requireStaff, async (req, res) => {
+  try {
+    const { customerName, notes, items } = req.body;
+
+    if (!customerName || !customerName.trim()) {
+      return res.status(400).json({ success: false, error: 'Customer name is required' });
+    }
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ success: false, error: 'No items provided' });
+    }
+
+    const results = [];
+    const errors = [];
+
+    // Process each item in the cart
+    for (const item of items) {
+      const { inventoryId, barcode, quantityDelivered } = item;
+
+      try {
+        // Find the inventory item
+        const inventoryItem = await Inventory.findById(inventoryId);
+        if (!inventoryItem) {
+          errors.push(`Item with barcode ${barcode} not found`);
+          continue;
+        }
+
+        // Check if enough stock is available
+        if (inventoryItem.quantity < parseInt(quantityDelivered)) {
+          errors.push(`Insufficient stock for ${inventoryItem.itemName}. Available: ${inventoryItem.quantity}`);
+          continue;
+        }
+
+        // Create delivery record
+        const delivery = new Delivery({
+          inventoryItem: inventoryId,
+          barcode,
+          customerName: customerName.trim(),
+          quantityDelivered: parseInt(quantityDelivered),
+          deliveredBy: req.session.userId,
+          notes: notes || ''
+        });
+
+        await delivery.save();
+
+        // Update inventory quantity
+        await Inventory.findByIdAndUpdate(inventoryId, {
+          $inc: { quantity: -parseInt(quantityDelivered) }
+        });
+
+        results.push({
+          itemName: inventoryItem.itemName,
+          quantity: quantityDelivered
+        });
+      } catch (itemError) {
+        console.error(`Error processing item ${barcode}:`, itemError);
+        errors.push(`Error processing item ${barcode}`);
+      }
+    }
+
+    if (results.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: errors.length > 0 ? errors.join('; ') : 'No items could be processed'
+      });
+    }
+
+    const message = `Delivery recorded: ${results.length} item(s) for ${customerName}`;
+
+    res.json({
+      success: true,
+      message,
+      deliveredItems: results,
+      errors: errors.length > 0 ? errors : undefined
+    });
+  } catch (error) {
+    console.error('Record multiple delivery error:', error);
+    res.status(500).json({ success: false, error: 'Error recording delivery' });
+  }
+});
+
+// Record delivery (single item - kept for backward compatibility)
 router.post('/record', requireStaff, async (req, res) => {
   try {
     const { inventoryId, barcode, customerName, quantityDelivered, notes } = req.body;
-    
+
     // Find the inventory item
     const inventoryItem = await Inventory.findById(inventoryId);
     if (!inventoryItem) {
@@ -110,7 +192,7 @@ router.get('/history', requireStaff, async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
-    
+
     const filter = {};
     if (req.query.customerName) {
       filter.customerName = { $regex: req.query.customerName, $options: 'i' };
@@ -218,7 +300,7 @@ router.post('/update/:id', requireAdmin, async (req, res) => {
 router.post('/delete/:id', requireAdmin, async (req, res) => {
   try {
     const delivery = await Delivery.findById(req.params.id);
-    
+
     if (!delivery) {
       req.flash('error', 'Delivery not found');
       return res.redirect('/delivery/history');
